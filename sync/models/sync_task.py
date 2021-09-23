@@ -7,11 +7,11 @@ import time
 import traceback
 from io import StringIO
 
-from odoo import api, fields, models
-from odoo.exceptions import ValidationError
-from odoo.tools.safe_eval import safe_eval, test_python_expr
+from flectra import api, fields, models
+from flectra.exceptions import ValidationError
+from flectra.tools.safe_eval import safe_eval, test_python_expr
 
-from odoo.addons.queue_job.job import job
+from flectra.addons.queue_job.job import job
 
 from .ir_logging import LOG_CRITICAL, LOG_DEBUG
 
@@ -32,7 +32,8 @@ class SyncTask(models.Model):
     automation_ids = fields.One2many(
         "sync.trigger.automation", "sync_task_id", copy=True
     )
-    webhook_ids = fields.One2many("sync.trigger.webhook", "sync_task_id", copy=True)
+    webhook_ids = fields.One2many(
+        "sync.trigger.webhook", "sync_task_id", copy=True)
     button_ids = fields.One2many(
         "sync.trigger.button", "sync_task_id", string="Manual Triggers", copy=True
     )
@@ -99,7 +100,8 @@ class SyncTask(models.Model):
     def _compute_active_triggers(self):
         for r in self.with_context(active_test=False):
             r.active_cron_ids = r.with_context(active_test=True).cron_ids
-            r.active_automation_ids = r.with_context(active_test=True).automation_ids
+            r.active_automation_ids = r.with_context(
+                active_test=True).automation_ids
             r.active_webhook_ids = r.with_context(active_test=True).webhook_ids
             r.active_button_ids = r.with_context(active_test=True).button_ids
 
@@ -137,7 +139,8 @@ class SyncTask(models.Model):
             start_time = time.time()
             result = self._eval(code, function, args, kwargs, eval_context)
             log(
-                "Executing {}: {:05.3f} sec".format(function, time.time() - start_time),
+                "Executing {}: {:05.3f} sec".format(
+                    function, time.time() - start_time),
                 LOG_DEBUG,
             )
             log("Job finished")

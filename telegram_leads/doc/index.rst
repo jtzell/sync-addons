@@ -7,12 +7,12 @@
 
 Module Installation
 ===================
-* `Install <https://odoo-development.readthedocs.io/en/latest/odoo/usage/install-module.html>`__ this module in a usual way
+* `Install <https://flectra-development.readthedocs.io/en/latest/flectra/usage/install-module.html>`__ this module in a usual way
 
 OpenAPI
 =======
 
-* In Odoo nagivate to menu ``[[ OpenAPI ]] >> Integrations``
+* In Flectra nagivate to menu ``[[ OpenAPI ]] >> Integrations``
 * Select integration ``telegram``.
 * At **Specification Link** field there is an OpenAPI URL which is needed in next steps
 * At ``Allowed Users`` tab click on the admin. You will see **OpenAPI token** which is needed in next steps.
@@ -90,4 +90,4 @@ Support
 
 If something goes wrong feel free to Contact us at apps@itpp.dev.
 
-We may need Odoo logs and `CloudWatch logs <https://aws.amazon.com/cloudwatch/>`__ information as well as proof of purchase.
+We may need Flectra logs and `CloudWatch logs <https://aws.amazon.com/cloudwatch/>`__ information as well as proof of purchase.

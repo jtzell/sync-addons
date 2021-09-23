@@ -3,8 +3,8 @@
 
 import uuid
 
-from odoo import api, fields, models
-from odoo.http import Response, request
+from flectra import api, fields, models
+from flectra.http import Response, request
 
 from .ir_logging import LOG_DEBUG
 
@@ -26,7 +26,8 @@ class SyncTriggerWebhook(models.Model):
     )
     active = fields.Boolean(default=True)
     webhook_type = fields.Selection(
-        [("http", "application/x-www-form-urlencoded"), ("json", "application/json")],
+        [("http", "application/x-www-form-urlencoded"),
+         ("json", "application/json")],
         string="Webhook Type",
         default="json",
     )
@@ -97,7 +98,8 @@ action = env["sync.trigger.webhook"].browse(%s).start()
                 data, status = result
         else:
             data = result
-        log("Webhook response: {} {}\n{}".format(status, headers, data), LOG_DEBUG)
+        log("Webhook response: {} {}\n{}".format(
+            status, headers, data), LOG_DEBUG)
         return self.make_response(data, status, headers)
 
     @api.model

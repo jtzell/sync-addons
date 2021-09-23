@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!-- Copyright 2020 Ivan Yelizariev <https://twitter.com/yelizariev>
      License MIT (https://opensource.org/licenses/MIT). -->
-<odoo>
+<flectra>
     <record id="trello-github_project" model="sync.project">
         <field name="name">Demo Trello-Github Integration</field>
         <field name="active" eval="False" />
@@ -595,4 +595,4 @@ def handle_cron():
         <field name="interval_number">1</field>
         <field name="interval_type">days</field>
     </record>
-</odoo>
+</flectra>

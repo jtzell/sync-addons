@@ -5,14 +5,14 @@
 # pylint: disable=redefined-builtin
 import logging
 
-from odoo import http
+from flectra import http
 
 from . import pinguin
 
 _logger = logging.getLogger(__name__)
 
 #################################################################
-# Odoo REST API                                                 #
+# Flectra REST API                                                 #
 #  Version 1                                                    #
 # --------------------------------------------------------------#
 # The current api version is considered stable, although        #
@@ -63,7 +63,8 @@ class ApiV1Controller(http.Controller):
     )
     # Call Method on RecordSet
     _api_endpoint_model_method = _api_endpoint + "/<model>/call/<method_name>"
-    _api_endpoint_model_method_ids = _api_endpoint + "/<model>/call/<method_name>/<ids>"
+    _api_endpoint_model_method_ids = _api_endpoint + \
+        "/<model>/call/<method_name>/<ids>"
     # Get Reports
     _api_report_docids = (
         _api_endpoint

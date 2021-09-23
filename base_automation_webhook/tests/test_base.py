@@ -1,7 +1,7 @@
 # Copyright 2019 Ivan Yelizariev <https://it-projects.info/team/yelizariev>
 # License MIT (https://opensource.org/licenses/MIT).
 
-from odoo.tests.common import TransactionCase
+from flectra.tests.common import TransactionCase
 
 
 class TestAutomation(TransactionCase):

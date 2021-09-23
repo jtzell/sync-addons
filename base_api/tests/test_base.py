@@ -1,8 +1,8 @@
 # Copyright 2019 Ivan Yelizariev <https://it-projects.info/team/yelizariev>
 # Copyright 2019 Anvar Kildebekov <https://it-projects.info/team/fedoranvar>
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
-from odoo.tests import tagged
-from odoo.tests.common import TransactionCase
+from flectra.tests import tagged
+from flectra.tests.common import TransactionCase
 
 prefix = "__base_api__."
 
@@ -191,13 +191,16 @@ class TestBase(TransactionCase):
         # (2) Check field value (correctness of creation)
         # (3) Check field value (correctness of creation)
         self.assertEqual(
-            t_company.get_external_id()[t_company.id].split(".", 1)[1], t_company_ext_id
+            t_company.get_external_id()[t_company.id].split(".", 1)[
+                1], t_company_ext_id
         )
         self.assertEqual(
-            t_child_1.get_external_id()[t_child_1.id].split(".", 1)[1], t_child_1_ext_id
+            t_child_1.get_external_id()[t_child_1.id].split(".", 1)[
+                1], t_child_1_ext_id
         )
         self.assertEqual(
-            t_child_2.get_external_id()[t_child_2.id].split(".", 1)[1], t_child_2_ext_id
+            t_child_2.get_external_id()[t_child_2.id].split(".", 1)[
+                1], t_child_2_ext_id
         )
         #
         # Test #1: Error : "External ID not defined"
@@ -213,21 +216,25 @@ class TestBase(TransactionCase):
         # Test #2: Record creation
         #
         t_vals["id"] = "ext.partner_1"
-        is_new, record_id2 = partner_obj.create_or_update_by_external_id(t_vals)
+        is_new, record_id2 = partner_obj.create_or_update_by_external_id(
+            t_vals)
         record = partner_obj.browse(record_id2)
         # (1) record was created
         # (2) record have requested external id
         # (3) record have one2many-field's value that was requested
         # (4) record have many2one-field's value that was requested
         self.assertTrue(is_new)
-        self.assertEqual(record.get_external_id()[record.id], prefix + "ext.partner_1")
+        self.assertEqual(record.get_external_id()[
+                         record.id], prefix + "ext.partner_1")
         self.assertEqual(record.child_ids.ids, [t_child_1.id, t_child_2.id])
         self.assertEqual(record.company_id, t_company)
         #
         # Test #3: Record update
         #
-        t_vals = {"id": "ext.partner_1", "child_ids": [(3, t_child_2_ext_id, 0)]}
-        is_new, record_id3 = partner_obj.create_or_update_by_external_id(t_vals)
+        t_vals = {"id": "ext.partner_1",
+                  "child_ids": [(3, t_child_2_ext_id, 0)]}
+        is_new, record_id3 = partner_obj.create_or_update_by_external_id(
+            t_vals)
         record = partner_obj.browse(record_id3)
         # (1) record was updated
         # (2) this is the same record (by id) that was created in Test#1

@@ -3,7 +3,7 @@
 
 import logging
 
-from odoo.tests.common import TransactionCase, tagged
+from flectra.tests.common import TransactionCase, tagged
 
 _logger = logging.getLogger(__name__)
 

@@ -1,7 +1,7 @@
 # Copyright 2020 Ivan Yelizariev <https://twitter.com/yelizariev>
 # License MIT (https://opensource.org/licenses/MIT).
 
-from odoo import fields, models
+from flectra import fields, models
 
 LOG_DEBUG = "debug"
 LOG_INFO = "info"
@@ -21,7 +21,8 @@ class IrLogging(models.Model):
     sync_project_id = fields.Many2one(
         "sync.project", related="sync_job_id.task_id.project_id"
     )
-    message_short = fields.Text(string="Message...", compute="_compute_message_short")
+    message_short = fields.Text(
+        string="Message...", compute="_compute_message_short")
     type = fields.Selection(selection_add=[("data_out", "Data Transmission")])
 
     def _compute_message_short(self):

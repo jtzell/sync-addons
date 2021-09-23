@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright 2019 Ivan Yelizariev <https://it-projects.info/team/yelizariev>
      License MIT (https://opensource.org/licenses/MIT). -->
-<odoo>
+<flectra>
     <record id="namespace_telegram" model="openapi.namespace">
         <field name="name">telegram</field>
         <field name="log_request">info</field>
@@ -25,4 +25,4 @@
         />
         <field name="create_context_ids" eval="[(4, ref('context_lead'))]" />
     </record>
-</odoo>
+</flectra>

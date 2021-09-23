@@ -6,9 +6,9 @@ import logging
 
 import requests
 
-from odoo import api
-from odoo.tests import tagged
-from odoo.tests.common import PORT, HttpCase, get_db_name
+from flectra import api
+from flectra.tests import tagged
+from flectra.tests.common import PORT, HttpCase, get_db_name
 
 from ..controllers import pinguin
 
@@ -37,7 +37,8 @@ class TestAPI(HttpCase):
     def request(self, method, url, auth=None, **kwargs):
         kwargs.setdefault("model", self.model_name)
         kwargs.setdefault("namespace", "demo")
-        url = ("http://localhost:%d/api/v1/{namespace}" % PORT + url).format(**kwargs)
+        url = (
+            "http://localhost:%d/api/v1/{namespace}" % PORT + url).format(**kwargs)
         self.opener = requests.Session()
         self.opener.cookies["session_id"] = self.session_id
         return self.opener.request(
@@ -45,7 +46,8 @@ class TestAPI(HttpCase):
         )
 
     def request_from_user(self, user, *args, **kwargs):
-        kwargs["auth"] = requests.auth.HTTPBasicAuth(self.db_name, user.openapi_token)
+        kwargs["auth"] = requests.auth.HTTPBasicAuth(
+            self.db_name, user.openapi_token)
         return self.request(*args, **kwargs)
 
     def test_read_many_all(self):
@@ -67,7 +69,8 @@ class TestAPI(HttpCase):
             self.demo_user, "POST", "/{model}", data_json=data_for_create
         )
         self.assertEqual(resp.status_code, pinguin.CODE__created)
-        created_user = self.phantom_env[self.model_name].browse(resp.json()["id"])
+        created_user = self.phantom_env[self.model_name].browse(resp.json()[
+                                                                "id"])
         self.assertEqual(created_user.name, data_for_create["name"])
 
     # TODO: doesn't work in test environment
@@ -105,7 +108,8 @@ class TestAPI(HttpCase):
             self.demo_user, "DELETE", "/{model}/{record_id}", record_id=partner.id
         )
         self.assertEqual(resp.status_code, pinguin.CODE__ok_no_content)
-        self.assertFalse(self.phantom_env[self.model_name].browse(partner.id).exists())
+        self.assertFalse(
+            self.phantom_env[self.model_name].browse(partner.id).exists())
         # TODO: check result
 
     def test_unauthorized_user(self):
@@ -118,7 +122,8 @@ class TestAPI(HttpCase):
         resp = self.request(
             "GET",
             "/{model}",
-            auth=requests.auth.HTTPBasicAuth(db_name, self.demo_user.openapi_token),
+            auth=requests.auth.HTTPBasicAuth(
+                db_name, self.demo_user.openapi_token),
         )
         self.assertEqual(resp.status_code, pinguin.CODE__db_not_found[0])
         self.assertEqual(resp.json()["error"], pinguin.CODE__db_not_found[1])
@@ -149,12 +154,14 @@ class TestAPI(HttpCase):
         self.assertTrue(namespace.id not in new_user.namespace_ids.ids)
 
         resp = self.request_from_user(new_user, "GET", "/{model}")
-        self.assertEqual(resp.status_code, pinguin.CODE__user_no_perm[0], resp.json())
+        self.assertEqual(resp.status_code,
+                         pinguin.CODE__user_no_perm[0], resp.json())
         self.assertEqual(resp.json()["error"], pinguin.CODE__user_no_perm[1])
 
     def test_call_allowed_method_on_singleton_record(self):
         if (
-            not self.env["ir.module.module"].search([("name", "=", "mail")]).state
+            not self.env["ir.module.module"].search(
+                [("name", "=", "mail")]).state
             == "installed"
         ):
             self.skipTest(
@@ -222,9 +229,11 @@ class TestAPI(HttpCase):
 
     # TODO: doesn't work in test environment
     def _test_log_creating(self):
-        logs_count_before_request = len(self.phantom_env["openapi.log"].search([]))
+        logs_count_before_request = len(
+            self.phantom_env["openapi.log"].search([]))
         self.request_from_user(self.demo_user, "GET", "/{model}")
-        logs_count_after_request = len(self.phantom_env["openapi.log"].search([]))
+        logs_count_after_request = len(
+            self.phantom_env["openapi.log"].search([]))
         self.assertTrue(logs_count_after_request > logs_count_before_request)
 
     # TODO test is not update for the latest module version
@@ -236,8 +245,10 @@ class TestAPI(HttpCase):
         model_for_report = self.phantom_env["ir.model"].search(
             [("model", "=", modelname_for_report)]
         )
-        namespace = self.phantom_env["openapi.namespace"].search([("name", "=")])
-        records_for_report = self.phantom_env[modelname_for_report].search([], limit=3)
+        namespace = self.phantom_env["openapi.namespace"].search([
+                                                                 ("name", "=")])
+        records_for_report = self.phantom_env[modelname_for_report].search([
+        ], limit=3)
         docids = ",".join([str(i) for i in records_for_report.ids])
 
         self.phantom_env["openapi.access"].create(
@@ -269,7 +280,8 @@ class TestAPI(HttpCase):
             "GET",
             url,
             timeout=30,
-            auth=requests.auth.HTTPBasicAuth(self.db_name, super_user.openapi_token),
+            auth=requests.auth.HTTPBasicAuth(
+                self.db_name, super_user.openapi_token),
         )
         self.assertEqual(resp.status_code, pinguin.CODE__success)
 

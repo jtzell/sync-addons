@@ -10,14 +10,14 @@ import time
 
 from pytz import timezone
 
-from odoo import api, fields, models
-from odoo.exceptions import UserError, ValidationError
-from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, frozendict
-from odoo.tools.safe_eval import safe_eval, test_python_expr
-from odoo.tools.translate import _
+from flectra import api, fields, models
+from flectra.exceptions import UserError, ValidationError
+from flectra.tools import DEFAULT_SERVER_DATETIME_FORMAT, frozendict
+from flectra.tools.safe_eval import safe_eval, test_python_expr
+from flectra.tools.translate import _
 
-from odoo.addons.base.models.ir_actions import dateutil
-from odoo.addons.queue_job.exception import RetryableJobError
+from flectra.addons.base.models.ir_actions import dateutil
+from flectra.addons.queue_job.exception import RetryableJobError
 
 from .ir_logging import LOG_CRITICAL, LOG_DEBUG, LOG_ERROR, LOG_INFO, LOG_WARNING
 
@@ -43,7 +43,8 @@ class SyncProject(models.Model):
     )
     active = fields.Boolean(default=True)
     eval_context = fields.Selection([], string="Evaluation context")
-    eval_context_description = fields.Text(compute="_compute_eval_context_description")
+    eval_context_description = fields.Text(
+        compute="_compute_eval_context_description")
 
     common_code = fields.Text(
         "Common Code",
@@ -54,8 +55,10 @@ class SyncProject(models.Model):
     """,
     )
     param_ids = fields.One2many("sync.project.param", "project_id", copy=True)
-    text_param_ids = fields.One2many("sync.project.text", "project_id", copy=True)
-    secret_ids = fields.One2many("sync.project.secret", "project_id", copy=True)
+    text_param_ids = fields.One2many(
+        "sync.project.text", "project_id", copy=True)
+    secret_ids = fields.One2many(
+        "sync.project.secret", "project_id", copy=True)
     task_ids = fields.One2many("sync.task", "project_id", copy=True)
     task_count = fields.Integer(compute="_compute_task_count")
     trigger_cron_count = fields.Integer(
@@ -113,7 +116,8 @@ class SyncProject(models.Model):
     def _compute_triggers(self):
         for r in self:
             r.trigger_cron_count = len(r.mapped("task_ids.cron_ids"))
-            r.trigger_automation_count = len(r.mapped("task_ids.automation_ids"))
+            r.trigger_automation_count = len(
+                r.mapped("task_ids.automation_ids"))
             r.trigger_webhook_count = len(r.mapped("task_ids.webhook_ids"))
             r.trigger_button_count = len(r.mapped("task_ids.button_ids"))
             r.trigger_button_ids = r.mapped("task_ids.button_ids")
@@ -121,7 +125,8 @@ class SyncProject(models.Model):
     @api.constrains("common_code")
     def _check_python_code(self):
         for r in self.sudo().filtered("common_code"):
-            msg = test_python_expr(expr=(r.common_code or "").strip(), mode="exec")
+            msg = test_python_expr(
+                expr=(r.common_code or "").strip(), mode="exec")
             if msg:
                 raise ValidationError(msg)
 
@@ -260,7 +265,8 @@ class SyncProject(models.Model):
                 secrets[p.key] = p.value
             eval_context_frozen = frozendict(eval_context)
             method = getattr(self, EVAL_CONTEXT_PREFIX + self.eval_context)
-            eval_context = dict(**eval_context, **method(secrets, eval_context_frozen))
+            eval_context = dict(
+                **eval_context, **method(secrets, eval_context_frozen))
             cleanup_eval_context(eval_context)
 
             executing_custom_context = time.time() - start_time
@@ -293,9 +299,11 @@ class SyncProject(models.Model):
                     dst_ref = create(src_data)
                     link_src_dst(src_data, dst_ref)
                 elif dst_ref:
-                    log("Destination record already exists: %s" % dst_ref, LOG_DEBUG)
+                    log("Destination record already exists: %s" %
+                        dst_ref, LOG_DEBUG)
                 elif not dst_ref:
-                    log("Destination record not found for %s" % src_data, LOG_DEBUG)
+                    log("Destination record not found for %s" %
+                        src_data, LOG_DEBUG)
 
         def sync_odoo2x(src_list, sync_info, create=False, update=False):
             # sync_info["relation"]
@@ -321,15 +329,15 @@ class SyncProject(models.Model):
         def sync_x2odoo(src_list, sync_info, create=False, update=False):
             # sync_info["relation"]
             # sync_info["x"]["get_ref"]
-            # sync_info["odoo"]["update"]: (odoo_record, x)
-            # sync_info["odoo"]["create"]: x -> odoo_record
+            # sync_info["flectra"]["update"]: (odoo_record, x)
+            # sync_info["flectra"]["create"]: x -> odoo_record
             relation = sync_info["relation"]
             x2ref = sync_info["x"]["get_ref"]
 
             def _x2odoo(x):
                 ref = x2ref(x)
                 link = link_functions["get_link"](relation, ref)
-                return link.odoo
+                return link.flectra
 
             def _add_link(x, odoo_record):
                 ref = x2ref(x)
@@ -340,8 +348,8 @@ class SyncProject(models.Model):
                 src_list,
                 _x2odoo,
                 _add_link,
-                create and sync_info["odoo"]["create"],
-                update and sync_info["odoo"]["update"],
+                create and sync_info["flectra"]["create"],
+                update and sync_info["flectra"]["update"],
             )
 
         # def sync_x2y(src_list, sync_info, create=False, update=False):
@@ -366,15 +374,16 @@ class SyncProject(models.Model):
 
             def link_src_dst(src_data, dst_ref):
                 src_ref = src_info["get_ref"](src_data)
-                refs = {src_info["system"]: src_ref, dst_info["system"]: dst_ref}
+                refs = {src_info["system"]: src_ref,
+                        dst_info["system"]: dst_ref}
                 return link_functions["set_link"](relation, refs)
 
             return _sync(
                 src_list,
                 src2dst,
                 link_src_dst,
-                create and src_info["odoo"]["create_odoo"],
-                update and src_info["odoo"]["update_odoo"],
+                create and src_info["flectra"]["create_odoo"],
+                update and src_info["flectra"]["update_odoo"],
             )
 
         return {
@@ -396,7 +405,8 @@ class SyncProjectParamMixin(models.AbstractModel):
     url = fields.Char("Documentation")
     project_id = fields.Many2one("sync.project", ondelete="cascade")
 
-    _sql_constraints = [("key_uniq", "unique (project_id, key)", "Key must be unique.")]
+    _sql_constraints = [
+        ("key_uniq", "unique (project_id, key)", "Key must be unique.")]
 
 
 class SyncProjectParam(models.Model):

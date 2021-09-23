@@ -1,8 +1,8 @@
 # Copyright 2020 Ivan Yelizariev <https://twitter.com/yelizariev>
 # License MIT (https://opensource.org/licenses/MIT).
 
-from odoo import api, fields, models
-from odoo.tools.translate import _
+from flectra import api, fields, models
+from flectra.tools.translate import _
 
 
 class SyncTriggerCron(models.Model):

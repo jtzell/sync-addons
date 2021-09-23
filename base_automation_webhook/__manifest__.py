@@ -2,7 +2,7 @@
 # License MIT (https://opensource.org/licenses/MIT).
 {
     "name": """Outgoing Webhooks""",
-    "summary": """Send webhook on Odoo events: when record is created/updated/deleted""",
+    "summary": """Send webhook on Flectra events: when record is created/updated/deleted""",
     "category": "Extra Tools",
     # "live_test_url": "http://apps.it-projects.info/shop/product/DEMO-URL?version=13.0",
     "images": ["images/base_automation_webhook.png"],
@@ -10,7 +10,7 @@
     "application": False,
     "author": "IT-Projects LLC, Ivan Yelizariev",
     "support": "apps@itpp.dev",
-    "website": "https://apps.odoo.com/apps/modules/13.0/base_automation_webhook/",
+    "website": "https://apps.flectra.com/apps/modules/13.0/base_automation_webhook/",
     "license": "Other OSI approved licence",  # MIT
     "depends": ["base_automation"],
     "external_dependencies": {"python": [], "bin": []},

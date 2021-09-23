@@ -1,6 +1,6 @@
 # Copyright 2018 Ivan Yelizariev <https://it-projects.info/team/yelizariev>
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
-from odoo import _, api, exceptions, models
+from flectra import _, api, exceptions, models
 
 
 class IrExports(models.Model):
@@ -10,7 +10,8 @@ class IrExports(models.Model):
     def _check_fields(self):
         # this exports record used in openapi.access
         if not self.env["openapi.access"].search_count(
-            ["|", ("read_one_id", "=", self.id), ("read_many_id", "=", self.id)]
+            ["|", ("read_one_id", "=", self.id),
+             ("read_many_id", "=", self.id)]
         ):
             return True
 

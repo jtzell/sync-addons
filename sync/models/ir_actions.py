@@ -1,7 +1,7 @@
 # Copyright 2020 Ivan Yelizariev <https://twitter.com/yelizariev>
 # License MIT (https://opensource.org/licenses/MIT).
 
-from odoo import fields, models
+from flectra import fields, models
 
 
 class IrActionsServer(models.Model):

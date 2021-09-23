@@ -7,11 +7,11 @@ import logging
 import xmlrpc.client as _client
 from math import sqrt
 
-from odoo import api, fields, models
-from odoo.exceptions import UserError
-from odoo.tools.translate import _
+from flectra import api, fields, models
+from flectra.exceptions import UserError
+from flectra.tools.translate import _
 
-from odoo.addons.queue_job.exception import RetryableJobError
+from flectra.addons.queue_job.exception import RetryableJobError
 
 from .ir_logging import LOG_WARNING
 from .sync_project import AttrDict
@@ -39,7 +39,7 @@ class SyncProjectDemo(models.Model):
     @api.model
     def _eval_context_odoo2odoo(self, secrets, eval_context):
         """
-        Additional functions to access external Odoo:
+        Additional functions to access external Flectra:
 
         * odoo_execute_kw(model, method, *args, **kwargs)
 
@@ -54,7 +54,7 @@ class SyncProjectDemo(models.Model):
         log = eval_context["log"]
         params = eval_context["params"]
         if not all([params.URL, params.DB, secrets.USERNAME, secrets.PASSWORD]):
-            raise UserError(_("External Odoo Credentials are not set"))
+            raise UserError(_("External Flectra Credentials are not set"))
 
         def odoo_execute_kw(model, method, *args, **kwargs):
             log_transmission(
@@ -62,13 +62,16 @@ class SyncProjectDemo(models.Model):
                 json.dumps([method, args, kwargs]),
             )
             try:
-                common = _client.ServerProxy("{}/xmlrpc/2/common".format(params.URL))
+                common = _client.ServerProxy(
+                    "{}/xmlrpc/2/common".format(params.URL))
                 uid = common.authenticate(
                     params.DB, secrets.USERNAME, secrets.PASSWORD, {}
                 )
-                models = _client.ServerProxy("{}/xmlrpc/2/object".format(params.URL))
+                models = _client.ServerProxy(
+                    "{}/xmlrpc/2/object".format(params.URL))
             except OSError:
-                raise RetryableJobError("Error on connecting to external Odoo")
+                raise RetryableJobError(
+                    "Error on connecting to external Flectra")
             res = models.execute_kw(
                 params.DB, uid, secrets.PASSWORD, model, method, args, kwargs
             )
@@ -89,7 +92,7 @@ class SyncProjectDemo(models.Model):
         """
         from lxml.html.clean import Cleaner
 
-        from odoo.tools import html2plaintext
+        from flectra.tools import html2plaintext
 
         log_transmission = eval_context["log_transmission"]
 
@@ -105,7 +108,8 @@ class SyncProjectDemo(models.Model):
             bot.sendMessage(chat_id, *args, **kwargs)
 
         def setWebhook(*args, **kwargs):
-            log_transmission("Telegram->setWebhook", json.dumps([args, kwargs]))
+            log_transmission("Telegram->setWebhook",
+                             json.dumps([args, kwargs]))
             bot.setWebhook(*args, **kwargs)
 
         def parse_data(data):
@@ -189,7 +193,8 @@ class SyncProjectDemo(models.Model):
                 for hook in client.list_hooks(secrets.TRELLO_TOKEN):
                     if hook.id_model == board.id:
                         log_transmission(
-                            TRELLO, "delete webhook: {}".format([hook.callback_url])
+                            TRELLO, "delete webhook: {}".format(
+                                [hook.callback_url])
                         )
                         hook.delete()
 
@@ -198,21 +203,24 @@ class SyncProjectDemo(models.Model):
                 description = "https://github.com/{}/issues/{}".format(
                     secrets.GITHUB_REPO, issue_id
                 )
-                log_transmission(TRELLO, "create: {}".format([name, description]))
+                log_transmission(
+                    TRELLO, "create: {}".format([name, description]))
                 card_list = board.open_lists()[0]
                 card = card_list.add_card(name, description)
                 return card.id
 
             def card_add_labels(card_id, tlabel_ids):
                 log_transmission(
-                    TRELLO, "add labels to card#{}: {}".format(card_id, tlabel_ids)
+                    TRELLO, "add labels to card#{}: {}".format(
+                        card_id, tlabel_ids)
                 )
                 card = client.get_card(card_id)
                 for label_id in tlabel_ids:
                     try:
                         label = client.get_label(label_id, board.id)
                     except ResourceUnavailable:
-                        log("Label is deleted in trello: %s" % label_id, LOG_WARNING)
+                        log("Label is deleted in trello: %s" %
+                            label_id, LOG_WARNING)
                         continue
                     if label_id in card.idLabels:
                         log("Label is already in card: %s" % label)
@@ -221,7 +229,8 @@ class SyncProjectDemo(models.Model):
 
             def card_remove_labels(card_id, tlabel_ids):
                 log_transmission(
-                    TRELLO, "remove labels from card#{}: {}".format(card_id, tlabel_ids)
+                    TRELLO, "remove labels from card#{}: {}".format(
+                        card_id, tlabel_ids)
                 )
                 card = client.get_card(card_id)
                 for label_id in tlabel_ids:
@@ -233,7 +242,8 @@ class SyncProjectDemo(models.Model):
 
             def card_add_message(card_id, message):
                 log_transmission(
-                    TRELLO, "add message to card#{}: {}".format(card_id, message)
+                    TRELLO, "add message to card#{}: {}".format(
+                        card_id, message)
                 )
                 card = client.get_card(card_id)
                 card.comment(message)
@@ -251,12 +261,14 @@ class SyncProjectDemo(models.Model):
             def label_update(tlabel_id, new_name, new_color):
                 log_transmission(
                     TRELLO,
-                    "label#{} update: {}".format(tlabel_id, [new_name, new_color]),
+                    "label#{} update: {}".format(
+                        tlabel_id, [new_name, new_color]),
                 )
                 res = client.fetch_json(
                     "/labels/{}".format(tlabel_id),
                     http_method="PUT",
-                    post_args={"id": tlabel_id, "name": new_name, "color": new_color},
+                    post_args={"id": tlabel_id,
+                               "name": new_name, "color": new_color},
                 )
                 log("Trello response: {}".format(res))
 
@@ -304,21 +316,24 @@ class SyncProjectDemo(models.Model):
                 # API: https://docs.github.com/en/rest/reference/repos#create-a-repository-webhook
                 # Events: https://docs.github.com/en/developers/webhooks-and-events/webhook-events-and-payloads
                 config = {"url": url, "content_type": "json"}
-                log_transmission(GITHUB, "set webhook: {}".format([config, events]))
+                log_transmission(
+                    GITHUB, "set webhook: {}".format([config, events]))
                 repo.create_hook("web", config, events)
 
             # Github Issues
             def issue_add_labels(issue_id, glabel_ids):
                 issue = repo.get_issue(int(issue_id))
                 labels = ids2labels(glabel_ids)
-                log_transmission(GITHUB, "add labels: {}".format([issue_id, labels]))
+                log_transmission(
+                    GITHUB, "add labels: {}".format([issue_id, labels]))
                 for lb in labels:
                     issue.add_to_labels(lb)
 
             def issue_remove_labels(issue_id, glabel_ids):
                 issue = repo.get_issue(int(issue_id))
                 labels = ids2labels(glabel_ids)
-                log_transmission(GITHUB, "remove labels: {}".format([issue_id, labels]))
+                log_transmission(
+                    GITHUB, "remove labels: {}".format([issue_id, labels]))
                 for lb in labels:
                     issue.remove_from_labels(lb)
 
@@ -354,7 +369,8 @@ class SyncProjectDemo(models.Model):
                 labels = ids2labels([int(glabel_id)])
                 lb = labels[0]
                 log_transmission(
-                    GITHUB, "update label: {}".format([lb, new_name, new_color])
+                    GITHUB, "update label: {}".format(
+                        [lb, new_name, new_color])
                 )
                 lb.edit(new_name, new_color)
 

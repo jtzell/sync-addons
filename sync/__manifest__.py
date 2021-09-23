@@ -4,7 +4,7 @@
 
 {
     "name": """Sync Studio""",
-    "summary": """Synchronize anything with anything: SystemX↔Odoo, Odoo1↔Odoo2, SystemX↔SystemY. ETL/ESB tool similar to OCA/connector, but more flexible""",
+    "summary": """Synchronize anything with anything: SystemX↔Flectra, Odoo1↔Odoo2, SystemX↔SystemY. ETL/ESB tool similar to OCA/connector, but more flexible""",
     "category": "Extra Tools",
     "images": ["images/sync-studio.jpg"],
     "version": "13.0.3.0.2",

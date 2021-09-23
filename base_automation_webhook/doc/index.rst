@@ -2,7 +2,7 @@
  Outgoing Webhooks
 ===================
 
-* `Install <https://odoo-development.readthedocs.io/en/latest/odoo/usage/install-module.html>`__ this module in a usual way
+* `Install <https://flectra-development.readthedocs.io/en/latest/flectra/usage/install-module.html>`__ this module in a usual way
 
 Documentation
 =============
@@ -12,7 +12,7 @@ Documentation
 Configuration
 =============
 
-* `Activate Developer Mode <https://odoo-development.readthedocs.io/en/latest/odoo/usage/debug-mode.html>`__
+* `Activate Developer Mode <https://flectra-development.readthedocs.io/en/latest/flectra/usage/debug-mode.html>`__
 * Open menu ``[[ Settings ]] >> Technical >> Automation >> Automated Actions``
 * Create new record and set field **Action To Do** to *Execute Python Code*.
   For example:

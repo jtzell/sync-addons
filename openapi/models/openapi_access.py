@@ -9,9 +9,9 @@ import types
 import urllib.parse as urlparse
 from inspect import getmro, isclass
 
-from odoo import _, api, exceptions, fields, models
+from flectra import _, api, exceptions, fields, models
 
-from odoo.addons.base_api.lib.pinguin import transform_strfields_to_dict
+from flectra.addons.base_api.lib.pinguin import transform_strfields_to_dict
 
 from ..controllers import pinguin
 
@@ -30,7 +30,8 @@ class Access(models.Model):
     _description = "Access via API "
 
     active = fields.Boolean("Active", default=True)
-    namespace_id = fields.Many2one("openapi.namespace", "Integration", required=True)
+    namespace_id = fields.Many2one(
+        "openapi.namespace", "Integration", required=True)
     model_id = fields.Many2one("ir.model", "Model", required=True)
     model = fields.Char("Model Name", related="model_id.model")
     api_create = fields.Boolean("Create via API", default=False)
@@ -295,9 +296,11 @@ class Access(models.Model):
                     m for m in self._get_method_list() if not m.startswith("_")
                 ]
             elif self.public_methods:
-                allowed_methods += [m for m in self.public_methods.split("\n") if m]
+                allowed_methods += [
+                    m for m in self.public_methods.split("\n") if m]
             if self.private_methods:
-                allowed_methods += [m for m in self.private_methods.split("\n") if m]
+                allowed_methods += [
+                    m for m in self.private_methods.split("\n") if m]
 
             allowed_methods = list(set(allowed_methods))
 
@@ -401,7 +404,8 @@ class Access(models.Model):
             )
         )
         if self.api_create or self.api_update:
-            all_fields = transform_strfields_to_dict(related_model.fields_get_keys())
+            all_fields = transform_strfields_to_dict(
+                related_model.fields_get_keys())
             definitions.update(
                 pinguin.get_OAS_definitions_part(related_model, all_fields)
             )
@@ -476,12 +480,14 @@ class AccessCreateContext(models.Model):
             try:
                 data = json.loads(record.context)
             except ValueError:
-                raise exceptions.ValidationError(_("Context must be jsonable."))
+                raise exceptions.ValidationError(
+                    _("Context must be jsonable."))
 
             for k, _v in data.items():
                 if k.startswith("default_") and k[8:] not in fields:
                     raise exceptions.ValidationError(
-                        _('The model "%s" has no such field: "%s".') % (Model, k[8:])
+                        _('The model "%s" has no such field: "%s".') % (
+                            Model, k[8:])
                     )
 
 
@@ -509,7 +515,7 @@ def getmembers(obj, predicate=None):
     for key in names:
         if key == "_cache":
             # NEW
-            # trying to read this key will return error in odoo 11.0+
+            # trying to read this key will return error in flectra 11.0+
             # AssertionError: Unexpected RecordCache(res.partner())
             continue
         # First try to get the value via getattr.  Some descriptors don't

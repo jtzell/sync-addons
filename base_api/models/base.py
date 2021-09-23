@@ -2,7 +2,7 @@
 # Copyright 2019 Anvar Kildebekov <https://it-projects.info/team/fedoranvar>
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 
-from odoo import api, models
+from flectra import api, models
 
 from ..lib import pinguin
 
@@ -59,7 +59,8 @@ class Base(models.AbstractModel):
                 result = imd_env.xmlid_lookup(PREFIX + "." + ext_id)[2]
             except ValueError:
                 raise ValueError(
-                    "No object with external id in field {}: {}".format(field, ext_id)
+                    "No object with external id in field {}: {}".format(
+                        field, ext_id)
                 )
             return result
 
@@ -75,7 +76,8 @@ class Base(models.AbstractModel):
             for index, tuple_record in enumerate(vals[field]):
                 list_record = list(tuple_record)
                 if list_record[0] in [1, 2, 3, 4] and isinstance(list_record[1], str):
-                    list_record[1] = convert_external_2_inner_id(list_record[1])
+                    list_record[1] = convert_external_2_inner_id(
+                        list_record[1])
                 elif list_record[0] == 6:
                     for record_for_replace in list_record[2]:
                         if isinstance(record_for_replace, str):

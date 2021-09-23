@@ -6,8 +6,8 @@ from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
 
-from odoo.exceptions import ValidationError
-from odoo.tests.common import TransactionCase
+from flectra.exceptions import ValidationError
+from flectra.tests.common import TransactionCase
 
 
 def generate_ref():
@@ -36,16 +36,16 @@ class TestLink(TransactionCase):
         ref = generate_ref()
         r.set_link(REL, ref)
         glink = self.get_link(REL, ref)
-        self.assertEqual(r, glink.odoo)
+        self.assertEqual(r, glink.flectra)
         self.assertEqual(ref, glink.external)
         glink = r.search_links(REL)
-        self.assertEqual(r, glink.odoo)
+        self.assertEqual(r, glink.flectra)
         self.assertEqual(ref, glink.external)
 
         # check search_links
         all_links = self.env["res.partner"].search([]).search_links(REL)
         self.assertEqual(1, len(all_links))
-        self.assertEqual(r, all_links[0].odoo)
+        self.assertEqual(r, all_links[0].flectra)
 
         # update sync_date
         now = datetime.now() - relativedelta(days=1)
@@ -63,7 +63,7 @@ class TestLink(TransactionCase):
         all_links = self.env["res.partner"].search([]).search_links(REL)
         self.assertTrue(all_links)
         self.assertEqual(1, len(all_links))
-        self.assertEqual(r, all_links[0].odoo)
+        self.assertEqual(r, all_links[0].flectra)
 
         # Multiple refs for the same relation and record
         r = self.create_record()
@@ -113,12 +113,12 @@ class TestLink(TransactionCase):
         # check links
         all_links = self.env["res.partner"].search([]).search_links(REL)
         self.assertNotEqual(1, len(all_links))
-        self.assertNotEqual(1, len(all_links.odoo))
-        self.assertIsInstance(all_links.odoo.ids, list)
+        self.assertNotEqual(1, len(all_links.flectra))
+        self.assertIsInstance(all_links.flectra.ids, list)
         self.assertIsInstance(all_links.external, list)
         self.assertIsInstance(all_links.sync_date, datetime)
         for link in all_links:
-            self.assertIsInstance(link.odoo.id, int)
+            self.assertIsInstance(link.flectra.id, int)
 
         # unlink
         all_links.unlink()
@@ -183,7 +183,8 @@ class TestLink(TransactionCase):
         self.assertEqual(glink1, glink3)
         self.assertEqual(glink2, glink4)
         self.assertNotEqual(glink1, glink2)
-        elinks = self.search_links(REL, {"github": None, "trello": [105, 1005]})
+        elinks = self.search_links(
+            REL, {"github": None, "trello": [105, 1005]})
         self.assertEqual(2, len(elinks))
         elinks = self.search_links(
             REL, {"github": [2, 5], "trello": [102, 100000002, 105, 1005]}

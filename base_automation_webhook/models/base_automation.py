@@ -4,7 +4,7 @@
 import requests
 
 # The file name is incorrect and should be called ir_actions_server.py instead
-from odoo import api, models
+from flectra import api, models
 
 
 class IrActionsServer(models.Model):

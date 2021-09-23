@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!-- Copyright 2020 Ivan Yelizariev <https://twitter.com/yelizariev>
      License MIT (https://opensource.org/licenses/MIT). -->
-<odoo>
+<flectra>
     <record id="sync_link_view_tree" model="ir.ui.view">
         <field name="name">sync.link.tree</field>
         <field name="model">sync.link</field>
@@ -49,8 +49,8 @@
                     filter_domain="['|', ('ref1', '=', self), ('ref2', '=', self)]"
                 />
                 <filter
-                    string="Odoo Links"
-                    name="odoo"
+                    string="Flectra Links"
+                    name="flectra"
                     domain="[('system2', '=', '__odoo__')]"
                 />
                 <filter
@@ -65,7 +65,7 @@
                         context="{'group_by':'relation'}"
                     />
                     <filter
-                        string="Odoo Model"
+                        string="Flectra Model"
                         name='model'
                         context="{'group_by':'model'}"
                     />
@@ -87,4 +87,4 @@
         groups="base.group_no_one"
         sequence="100"
     />
-</odoo>
+</flectra>

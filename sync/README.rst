@@ -12,8 +12,8 @@
 
 Synchronize anything with anything:
 
-* System X ↔ Odoo
-* Odoo 1 ↔ Odoo 2
+* System X ↔ Flectra
+* Flectra 1 ↔ Flectra 2
 * System X ↔ System Y
 
 Provides a single place to handle synchronization trigered by one of the following events:
@@ -43,7 +43,7 @@ Developer Hints
 Public webhook address
 ----------------------
 
-If you run Odoo locally and need to test webhook, you can use ssh tunneling:
+If you run Flectra locally and need to test webhook, you can use ssh tunneling:
 
 * Connect your server:
 
@@ -59,7 +59,7 @@ If you run Odoo locally and need to test webhook, you can use ssh tunneling:
 
       ssh user@yourserver.example -R 0.0.0.0:8069:localhost:8069
 
-Now you can set ``http://yourserver.example:8069`` as a value for ``web.base.url`` in Odoo (menu ``[[ Settings ]] >> System Parameters``). Also, you need to set any value to parameter `web.base.url.freeze <https://odoo-source.com/?q=web.base.url.freeze&i=nope&files=&excludeFiles=po%24%7Cpot%24%7Cyml%24%7Cyaml%24%7Ccss%24%7C%2Fstatic%2Flib%2F&repos=odoo>`__
+Now you can set ``http://yourserver.example:8069`` as a value for ``web.base.url`` in Flectra (menu ``[[ Settings ]] >> System Parameters``). Also, you need to set any value to parameter `web.base.url.freeze <https://flectra-source.com/?q=web.base.url.freeze&i=nope&files=&excludeFiles=po%24%7Cpot%24%7Cyml%24%7Cyaml%24%7Ccss%24%7C%2Fstatic%2Flib%2F&repos=flectra>`__
 
 Few more steps requires to use https connection (e.g. telegram api works with https only). In your server do as following:
 
@@ -95,14 +95,14 @@ Contributors
 * `Ivan Yelizariev <https://twitter.com/yelizariev>`__:
 
       * :one::two: init version of the module
-      * :one::two: redesign module to prevent odoo container escapes
+      * :one::two: redesign module to prevent flectra container escapes
 
 Further information
 ===================
 
-Odoo Apps Store: https://apps.odoo.com/apps/modules/13.0/sync/
+Flectra Apps Store: https://apps.flectra.com/apps/modules/13.0/sync/
 
 
 Notifications on updates: `via Atom <https://github.com/itpp-labs/sync-addons/commits/13.0/sync.atom>`_, `by Email <https://blogtrottr.com/?subscribe=https://github.com/itpp-labs/sync-addons/commits/13.0/sync.atom>`_
 
-Tested on `Odoo 13.0 <https://github.com/odoo/odoo/commit/9fe7d55e64867d177519e99cc45f9ecfeb3746a3>`_
+Tested on `Flectra 13.0 <https://github.com/flectra/flectra/commit/9fe7d55e64867d177519e99cc45f9ecfeb3746a3>`_

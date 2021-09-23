@@ -3,9 +3,9 @@
 
 import logging
 
-from odoo import api, fields, models, tools
-from odoo.exceptions import ValidationError
-from odoo.tools.translate import _
+from flectra import api, fields, models, tools
+from flectra.exceptions import ValidationError
+from flectra.tools.translate import _
 
 from .ir_logging import LOG_DEBUG
 
@@ -25,14 +25,14 @@ class SyncLink(models.Model):
 
     relation = fields.Char("Relation Name", required=True)
     system1 = fields.Char("System 1", required=True)
-    # index system2 only to make search "Odoo links"
+    # index system2 only to make search "Flectra links"
     system2 = fields.Char("System 2", required=True, index=True)
     ref1 = fields.Char("Ref 1", required=True)
     ref2 = fields.Char("Ref 2", required=True)
     date = fields.Datetime(
         string="Sync Date", default=fields.Datetime.now, required=True
     )
-    model = fields.Char("Odoo Model", index=True)
+    model = fields.Char("Flectra Model", index=True)
 
     def _auto_init(self):
         res = super(SyncLink, self)._auto_init()
@@ -169,9 +169,9 @@ class SyncLink(models.Model):
                 )
         return res
 
-    # Odoo links
+    # Flectra links
     @property
-    def odoo(self):
+    def flectra(self):
         res = None
         for r in self:
             record = self.env[r.model].browse(int(getattr(r, ODOO_REF)))
@@ -213,7 +213,7 @@ class SyncLink(models.Model):
             external_refs = ref_info
             return self._get_link_external(rel, external_refs)
         else:
-            # Odoo link
+            # Flectra link
             ref = ref_info
             return self._get_link_odoo(rel, ref)
 

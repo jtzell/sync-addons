@@ -26,7 +26,7 @@ Contributors
 Further information
 ===================
 
-Odoo Apps Store: https://apps.odoo.com/apps/modules/13.0/base_api/
+Flectra Apps Store: https://apps.flectra.com/apps/modules/13.0/base_api/
 
 
 Notifications on updates: `via Atom
@@ -34,4 +34,4 @@ Notifications on updates: `via Atom
 `by Email
 <https://blogtrottr.com/?subscribe=https://github.com/it-projects-llc/sync-addons/commits/13.0/base_api.atom>`__
 
-Tested on `Odoo 13.0 <https://github.com/odoo/odoo/commit/eed3171f2f057223c3fbedd95ce6bcde2124f46c>`_
+Tested on `Flectra 13.0 <https://github.com/flectra/flectra/commit/eed3171f2f057223c3fbedd95ce6bcde2124f46c>`_

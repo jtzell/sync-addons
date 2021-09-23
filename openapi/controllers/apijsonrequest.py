@@ -10,8 +10,8 @@ import time
 import psycopg2
 import werkzeug.wrappers
 
-import odoo
-from odoo.http import (
+import flectra
+from flectra.http import (
     AuthenticationError,
     Response,
     Root,
@@ -22,8 +22,8 @@ from odoo.http import (
     rpc_response,
     serialize_exception,
 )
-from odoo.service.server import memory_info
-from odoo.tools import date_utils
+from flectra.service.server import memory_info
+from flectra.tools import date_utils
 
 try:
     import psutil
@@ -67,7 +67,8 @@ class ApiJsonRequest(WebRequest):
             request = args.get("rb")
         elif jsonp and request_id:
             # jsonp 2 steps step2 GET: run and return result
-            request = self.session.pop("jsonp_request_{}".format(request_id), "{}")
+            request = self.session.pop(
+                "jsonp_request_{}".format(request_id), "{}")
         else:
             # regular jsonrpc2
             request = self.httprequest.get_data().decode(self.httprequest.charset)
@@ -113,16 +114,16 @@ class ApiJsonRequest(WebRequest):
             if not isinstance(
                 exception,
                 (
-                    odoo.exceptions.Warning,
+                    flectra.exceptions.Warning,
                     SessionExpiredException,
-                    odoo.exceptions.except_orm,
+                    flectra.exceptions.except_orm,
                     werkzeug.exceptions.NotFound,
                 ),
             ):
                 _logger.exception("Exception during JSON request handling.")
             error = {
                 "code": 500,
-                "message": "Odoo Server Error",
+                "message": "Flectra Server Error",
                 "data": serialize_exception(exception),
                 "openapi_message": exception.args[0],
             }
@@ -133,10 +134,10 @@ class ApiJsonRequest(WebRequest):
                 error["message"] = "404: Not Found"
             if isinstance(exception, AuthenticationError):
                 error["code"] = 100
-                error["message"] = "Odoo Session Invalid"
+                error["message"] = "Flectra Session Invalid"
             if isinstance(exception, SessionExpiredException):
                 error["code"] = 100
-                error["message"] = "Odoo Session Expired"
+                error["message"] = "Flectra Session Expired"
             return self._json_response(error=error)
 
     def dispatch(self):
@@ -157,7 +158,8 @@ class ApiJsonRequest(WebRequest):
                     start_memory = memory_info(psutil.Process(os.getpid()))
                 if rpc_request and rpc_response_flag:
                     rpc_request.debug(
-                        "%s: %s %s, %s", endpoint, model, method, pprint.pformat(args)
+                        "%s: %s %s, %s", endpoint, model, method, pprint.pformat(
+                            args)
                     )
 
             result = self._call_function(**self.params)
@@ -177,7 +179,8 @@ class ApiJsonRequest(WebRequest):
                     (end_memory - start_memory) / 1024,
                 )
                 if rpc_response_flag:
-                    rpc_response.debug("%s, %s", logline, pprint.pformat(result))
+                    rpc_response.debug("%s, %s", logline,
+                                       pprint.pformat(result))
                 else:
                     rpc_request.debug(logline)
             return self._json_response(result)
@@ -189,7 +192,8 @@ class ApiJsonRequest(WebRequest):
 def api_route(route=None, **kw):
 
     routing = kw.copy()
-    assert "type" not in routing or routing["type"] in ("http", "json", "apijson")
+    assert "type" not in routing or routing["type"] in (
+        "http", "json", "apijson")
 
     def decorator(f):
         if route:

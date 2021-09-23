@@ -1,9 +1,9 @@
 # Copyright 2020 Ivan Yelizariev <https://twitter.com/yelizariev>
 # License MIT (https://opensource.org/licenses/MIT).
 
-from odoo import http
+from flectra import http
 
-from odoo.addons.website.controllers.main import Website
+from flectra.addons.website.controllers.main import Website
 
 
 class Webhook(http.Controller):

@@ -13,8 +13,8 @@
 Generate Leads out of messages forwarded in Telegram.
 
 The module contains necessary configuration and documenation, while AWS-Lambda
-code is proprietary and provided only after purchasing the module `odoo apps
-store <https://apps.odoo.com/apps/modules/13.0/telegram_leads/>`__.
+code is proprietary and provided only after purchasing the module `flectra apps
+store <https://apps.flectra.com/apps/modules/13.0/telegram_leads/>`__.
 
 Roadmap
 =======
@@ -36,9 +36,9 @@ Contributors
 Further information
 ===================
 
-Odoo Apps Store: https://apps.odoo.com/apps/modules/13.0/telegram_leads/
+Flectra Apps Store: https://apps.flectra.com/apps/modules/13.0/telegram_leads/
 
 
 Notifications on updates: `via Atom <https://github.com/it-projects-llc/sync-addons/commits/13.0/telegram_leads.atom>`_, `by Email <https://blogtrottr.com/?subscribe=https://github.com/it-projects-llc/sync-addons/commits/13.0/telegram_leads.atom>`_
 
-Tested on `Odoo 12.0 <https://github.com/odoo/odoo/commit/dab3c6bedf266d3ed92a8aee7e571269c017ac11>`_
+Tested on `Flectra 12.0 <https://github.com/flectra/flectra/commit/dab3c6bedf266d3ed92a8aee7e571269c017ac11>`_

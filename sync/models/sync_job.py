@@ -1,10 +1,10 @@
 # Copyright 2020 Ivan Yelizariev <https://twitter.com/yelizariev>
 # License MIT (https://opensource.org/licenses/MIT).
 
-from odoo import api, fields, models
-from odoo.tools.translate import _
+from flectra import api, fields, models
+from flectra.tools.translate import _
 
-from odoo.addons.queue_job.job import DONE, ENQUEUED, FAILED, PENDING, STARTED
+from flectra.addons.queue_job.job import DONE, ENQUEUED, FAILED, PENDING, STARTED
 
 from .ir_logging import LOG_CRITICAL, LOG_ERROR, LOG_WARNING
 
@@ -27,18 +27,22 @@ class SyncJob(models.Model):
 
     trigger_name = fields.Char(compute="_compute_trigger_name", store=True)
     trigger_cron_id = fields.Many2one("sync.trigger.cron", readonly=True)
-    trigger_automation_id = fields.Many2one("sync.trigger.automation", readonly=True)
+    trigger_automation_id = fields.Many2one(
+        "sync.trigger.automation", readonly=True)
     trigger_webhook_id = fields.Many2one("sync.trigger.webhook", readonly=True)
     trigger_button_id = fields.Many2one("sync.trigger.button", readonly=True)
-    task_id = fields.Many2one("sync.task", compute="_compute_sync_task_id", store=True)
+    task_id = fields.Many2one(
+        "sync.task", compute="_compute_sync_task_id", store=True)
     project_id = fields.Many2one(
         "sync.project", related="task_id.project_id", readonly=True
     )
     parent_job_id = fields.Many2one("sync.job", readonly=True)
-    job_ids = fields.One2many("sync.job", "parent_job_id", "Sub jobs", readonly=True)
+    job_ids = fields.One2many(
+        "sync.job", "parent_job_id", "Sub jobs", readonly=True)
     log_ids = fields.One2many("ir.logging", "sync_job_id", readonly=True)
     log_count = fields.Integer(compute="_compute_log_count")
-    queue_job_id = fields.Many2one("queue.job", string="Queue Job", readonly=True)
+    queue_job_id = fields.Many2one(
+        "queue.job", string="Queue Job", readonly=True)
     queue_job_state = fields.Selection(
         related="queue_job_id.state", readonly=True, string="Queue Job State"
     )
@@ -79,7 +83,8 @@ class SyncJob(models.Model):
             states = [q.state for q in jobs.mapped("queue_job_id")]
             levels = {log.level for log in jobs.mapped("log_ids")}
             computed_state = DONE
-            has_errors = any(lev in [LOG_CRITICAL, LOG_ERROR] for lev in levels)
+            has_errors = any(lev in [LOG_CRITICAL, LOG_ERROR]
+                             for lev in levels)
             has_warnings = any(lev == LOG_WARNING for lev in levels)
             for s in [FAILED, STARTED, ENQUEUED, PENDING]:
                 if any(s == ss for ss in states):
@@ -91,7 +96,8 @@ class SyncJob(models.Model):
                 computed_state = DONE_WARNING
 
             r.state = computed_state
-            r.in_progress = any(s in [PENDING, ENQUEUED, STARTED] for s in states)
+            r.in_progress = any(
+                s in [PENDING, ENQUEUED, STARTED] for s in states)
 
     @api.depends("log_ids")
     def _compute_log_count(self):
@@ -113,7 +119,8 @@ class SyncJob(models.Model):
     def _compute_trigger_name(self):
         for r in self:
             if r.parent_job_id:
-                r.trigger_name = (r.parent_job_id.trigger_name or "") + "." + r.function
+                r.trigger_name = (
+                    r.parent_job_id.trigger_name or "") + "." + r.function
                 continue
             for f in TRIGGER_FIELDS:
                 t = getattr(r, f)

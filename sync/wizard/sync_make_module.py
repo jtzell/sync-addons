@@ -4,9 +4,9 @@ import base64
 
 from lxml import etree
 
-from odoo import api, fields, models
+from flectra import api, fields, models
 
-from odoo.addons.http_routing.models.ir_http import slugify
+from flectra.addons.http_routing.models.ir_http import slugify
 
 PARAM_NAME = "sync.export_project.author_name"
 PARAM_URL = "sync.export_project.author_url"
@@ -19,19 +19,24 @@ class SyncMakeModule(models.TransientModel):
     _description = "Generating XML data file for a module"
 
     name = fields.Char("File Name", readonly=True, compute="_compute_name")
-    name2 = fields.Char("File Name Txt", readonly=True, compute="_compute_name")
+    name2 = fields.Char("File Name Txt", readonly=True,
+                        compute="_compute_name")
     data = fields.Binary("File", readonly=True, attachment=False)
     data2 = fields.Binary("File Txt", related="data")
     module = fields.Char("Module Technical Name", required=True)
-    copyright_years = fields.Char("Copyright Year", default="2021", required=True)
-    author_name = fields.Char("Author Name", help="e.g. Ivan Yelizariev", required=True)
-    author_url = fields.Char("Author URL", help="e.g. https://twitter.com/yelizariev")
+    copyright_years = fields.Char(
+        "Copyright Year", default="2021", required=True)
+    author_name = fields.Char(
+        "Author Name", help="e.g. Ivan Yelizariev", required=True)
+    author_url = fields.Char(
+        "Author URL", help="e.g. https://twitter.com/yelizariev")
     license_line = fields.Char(
         "License",
         default="License MIT (https://opensource.org/licenses/MIT)",
         required=True,
     )
-    state = fields.Selection([("choose", "choose"), ("get", "get")], default="choose")
+    state = fields.Selection(
+        [("choose", "choose"), ("get", "get")], default="choose")
     project_id = fields.Many2one("sync.project")
 
     def _compute_name(self):
@@ -44,8 +49,10 @@ class SyncMakeModule(models.TransientModel):
     @api.model
     def default_get(self, fields):
         vals = super().default_get(fields)
-        vals["author_name"] = self.env["ir.config_parameter"].get_param(PARAM_NAME, "")
-        vals["author_url"] = self.env["ir.config_parameter"].get_param(PARAM_URL, "")
+        vals["author_name"] = self.env["ir.config_parameter"].get_param(
+            PARAM_NAME, "")
+        vals["author_url"] = self.env["ir.config_parameter"].get_param(
+            PARAM_URL, "")
         license_line = self.env["ir.config_parameter"].get_param(PARAM_LICENSE)
         if license_line:
             vals["license_line"] = license_line
@@ -63,10 +70,12 @@ class SyncMakeModule(models.TransientModel):
 
     def act_makefile(self):
         self.env["ir.config_parameter"].set_param(PARAM_NAME, self.author_name)
-        self.env["ir.config_parameter"].set_param(PARAM_LICENSE, self.license_line)
+        self.env["ir.config_parameter"].set_param(
+            PARAM_LICENSE, self.license_line)
         self.env["ir.config_parameter"].set_param(PARAM_MODULE, self.module)
         if self.author_url:
-            self.env["ir.config_parameter"].set_param(PARAM_URL, self.author_url)
+            self.env["ir.config_parameter"].set_param(
+                PARAM_URL, self.author_url)
 
         url = " <{}>".format(self.author_url) if self.author_url else ""
         copyright_str = (
@@ -77,13 +86,14 @@ class SyncMakeModule(models.TransientModel):
                 license_line=self.license_line,
             )
         )
-        root = etree.Element("odoo")
+        root = etree.Element("flectra")
         project = self.project_id.with_context(active_test=False)
         records = [
             (project, ("name", "active", "eval_context", "common_code")),
         ]
         for secret in project.secret_ids:
-            records.append((secret, ("key", "description", "url", "project_id")))
+            records.append(
+                (secret, ("key", "description", "url", "project_id")))
 
         for param in project.param_ids:
             records.append(
@@ -93,7 +103,8 @@ class SyncMakeModule(models.TransientModel):
         for task in project.task_ids:
             records.append((task, ("name", "active", "project_id", "code")))
             for trigger in task.button_ids:
-                records.append((trigger, ("trigger_name", "name", "sync_task_id")))
+                records.append(
+                    (trigger, ("trigger_name", "name", "sync_task_id")))
             for trigger in task.cron_ids:
                 records.append(
                     (
@@ -165,7 +176,8 @@ class SyncMakeModule(models.TransientModel):
                 return existing.complete_name
 
         xmlid = "{}--{}".format(
-            slugify(getattr(record, "trigger_name", "") or record.display_name),
+            slugify(getattr(record, "trigger_name", "")
+                    or record.display_name),
             slugify(record._description),
         )
 
@@ -194,7 +206,8 @@ class SyncMakeModule(models.TransientModel):
         return xml
 
     def _record2xml(self, record, fields):
-        xml = etree.Element("record", id=self._record2id(record), model=record._name)
+        xml = etree.Element("record", id=self._record2id(
+            record), model=record._name)
         for fname in fields:
             xml.append(self._field2xml(record, fname))
         return xml

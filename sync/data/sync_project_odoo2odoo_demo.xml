@@ -2,7 +2,7 @@
 <!-- Copyright 2020 Ivan Yelizariev <https://twitter.com/yelizariev>
      Copyright 2021 Denis Mudarisov <https://github.com/trojikman>
      License MIT (https://opensource.org/licenses/MIT). -->
-<odoo>
+<flectra>
     <!-- Odoo2odoo -->
     <record id="odoo2odoo_project" model="sync.project">
         <field name="name">Demo Odoo2odoo Integration</field>
@@ -36,13 +36,13 @@ def parse_date(s):
     <record id="odoo2odoo_project_param_url" model="sync.project.param">
         <field name="key">URL</field>
         <field name="description">
-            URL to external Odoo, e.g. https://odoo.example
+            URL to external Flectra, e.g. https://flectra.example
         </field>
         <field name="project_id" ref="sync.odoo2odoo_project" />
     </record>
     <record id="odoo2odoo_project_param_DB" model="sync.project.param">
         <field name="key">DB</field>
-        <field name="description">Odoo database name</field>
+        <field name="description">Flectra database name</field>
         <field name="project_id" ref="sync.odoo2odoo_project" />
     </record>
     <record id="odoo2odoo_project_secret_username" model="sync.project.secret">
@@ -55,11 +55,11 @@ def parse_date(s):
         <field name="project_id" ref="sync.odoo2odoo_project" />
     </record>
     <!-- TODO: split tasks:
-         * Local Odoo to Remote Odoo
-         * Remote Odoo to Local Odoo
+         * Local Flectra to Remote Flectra
+         * Remote Flectra to Local Flectra
     -->
     <record id="odoo2odoo_task_local2remote" model="sync.task">
-        <field name="name">Sync Local Partners To Remote Odoo</field>
+        <field name="name">Sync Local Partners To Remote Flectra</field>
         <field name="project_id" ref="sync.odoo2odoo_project" />
         <field name="code">
 <![CDATA[
@@ -120,10 +120,10 @@ def handle_cron():
         [["id", "in", [int(id) for id in links.external]], ["write_date", ">", links.sync_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)]],
         fields=["write_date", IMAGE_FIELD]
     )
-    # Save fetched data in local Odoo
+    # Save fetched data in local Flectra
     for ep in external_partners:
         link = get_link(PARTNER_REL,  ep["id"])
-        p = link.odoo
+        p = link.flectra
         sync_date = parse_date(ep["write_date"])
         if sync_date > link.sync_date:
             p.write({IMAGE_FIELD: ep[IMAGE_FIELD]})
@@ -147,4 +147,4 @@ def handle_cron():
         <field name="trigger_name">PUSH_ALL_LOCAL_PARTNERS</field>
         <field name="sync_task_id" ref="sync.odoo2odoo_task_local2remote" />
     </record>
-</odoo>
+</flectra>

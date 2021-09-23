@@ -10,7 +10,7 @@
     "application": False,
     "author": "IT-Projects LLC, Ivan Yelizariev",
     "support": "apps@itpp.dev",
-    "website": "https://apps.odoo.com/apps/modules/12.0/telegram_leads/",
+    "website": "https://apps.flectra.com/apps/modules/12.0/telegram_leads/",
     "license": "Other OSI approved licence",  # MIT
     "depends": ["openapi", "crm"],
     "external_dependencies": {"python": [], "bin": []},

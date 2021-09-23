@@ -8,13 +8,13 @@
 Installation
 ============
 
-* Make configuration required for `queue_job <https://apps.odoo.com/apps/modules/13.0/queue_job/#id12>`__ module. In particular:
+* Make configuration required for `queue_job <https://apps.flectra.com/apps/modules/13.0/queue_job/#id12>`__ module. In particular:
 
-  * add ``queue_job`` to `server wide modules <https://odoo-development.readthedocs.io/en/latest/admin/server_wide_modules.html>`__, e.g.::
+  * add ``queue_job`` to `server wide modules <https://flectra-development.readthedocs.io/en/latest/admin/server_wide_modules.html>`__, e.g.::
 
         --load base,web,queue_job
 
-* `Install <https://odoo-development.readthedocs.io/en/latest/odoo/usage/install-module.html>`__ this module in a usual way
+* `Install <https://flectra-development.readthedocs.io/en/latest/flectra/usage/install-module.html>`__ this module in a usual way
 * Install python package that you need to use. For example, to try demo projects install following packages:
 
     python3 -m pip install python-telegram-bot PyGithub py-trello
@@ -143,7 +143,7 @@ Available variables and functions:
 Base
 ~~~~
 
-* ``env``: Odoo Environment
+* ``env``: Flectra Environment
 * ``log(message, level=LOG_INFO)``: logging function to record debug information
 
   log levels:
@@ -163,7 +163,7 @@ Base
 Links
 ~~~~~
 
-* ``<record>.set_link(relation_name, external, sync_date=None, allow_many2many=False) -> link``: makes link between Odoo and external resource
+* ``<record>.set_link(relation_name, external, sync_date=None, allow_many2many=False) -> link``: makes link between Flectra and external resource
 
   * ``allow_many2many``: when False raises an error if there is a link for the
     ``record`` and ``relation_name`` or if there is a link for ``relation_name``
@@ -172,17 +172,17 @@ Links
 * ``<records>.search_links(relation_name, refs=[external_ref1, external_ref2, ...]) -> links``
 * ``get_link(relation_name, external_ref) -> link``
 
-Odoo Link usage:
+Flectra Link usage:
 
-* ``link.odoo``: normal Odoo record
+* ``link.flectra``: normal Flectra record
 
-  * ``link.odoo._name``: model name, e.g. ``res.partner``
-  * ``link.odoo.id``: odoo record id
-  * ``link.odoo.<field>``: some field of the record, e.g. ``link.odoo.email``: partner email
+  * ``link.flectra._name``: model name, e.g. ``res.partner``
+  * ``link.flectra.id``: flectra record id
+  * ``link.flectra.<field>``: some field of the record, e.g. ``link.flectra.email``: partner email
 
 * ``link.external``: external reference, e.g. external id of a partner
 * ``link.sync_date``: last saved date-time information
-* ``links.odoo``: normal Odoo RecordSet
+* ``links.flectra``: normal Flectra RecordSet
 * ``links.external``: list of all external references
 * ``links.sync_date``: minimal data-time among links
 * ``links.update_links(sync_date=None)``: set new sync_date value; if value is not passed, then ``now()`` is used
@@ -236,16 +236,16 @@ You can also link external data with external data on syncing two different syst
 * ``get_link(relation_name, refs) -> elink``
 
   * At least one of the reference should be not Falsy
-  * ``get_link`` raise error, if there are few odoo records linked to the
+  * ``get_link`` raise error, if there are few flectra records linked to the
     references. Set work with multiple relations (*one2many*, *many2one*,
     *many2many*) use ``set_link(..., allow_many2many=False)`` and
     ``search_links``
 
 In place of ``github`` and ``trello`` you can use other labels depending on what you sync.
 
-External Link is similar to Odoo link with the following differences:
+External Link is similar to Flectra link with the following differences:
 
-* ``elink.get(<system>)``, e.g. ``elink.get("github")``: reference value for system; it's a replacement for ``link.odoo`` and ``link.external`` in Odoo link
+* ``elink.get(<system>)``, e.g. ``elink.get("github")``: reference value for system; it's a replacement for ``link.flectra`` and ``link.external`` in Flectra link
 
 Sync Helpers
 ~~~~~~~~~~~~
@@ -260,8 +260,8 @@ For one2one syncronization you can use following helpers.
 
 * ``sync_x2odoo(src_list, sync_info, create=False, update=False)``
 
-  * ``sync_info["odoo"]["create"](x) -> odoo_record``: create odoo record from external data
-  * ``sync_info["odoo"]["update"](odoo_record, x) -> odoo_record``:  update odoo record according to providing external data
+  * ``sync_info["flectra"]["create"](x) -> odoo_record``: create flectra record from external data
+  * ``sync_info["flectra"]["update"](odoo_record, x) -> odoo_record``:  update flectra record according to providing external data
 
 Common args:
 
@@ -281,7 +281,7 @@ To use helpers, create ``sync_info`` with all information, e.g.
          "create": employee_create,
          "update": employee_update,
        },
-       "odoo": {
+       "flectra": {
          "create": employee_create_odoo,
          "update": employee_update_odoo,
        }
@@ -364,7 +364,7 @@ Evaluation provides additional variables and methods for a project. For example,
 .. code-block:: python
 
    import requests
-   from odoo import api, fields, models
+   from flectra import api, fields, models
 
    class SyncProject(models.Model):
 
@@ -443,13 +443,13 @@ hand corner. You can filter and group logs by following fields:
 * Log Level
 * Status (Success / Fail)
 
-Demo Project: Odoo <-> Telegram
+Demo Project: Flectra <-> Telegram
 ===============================
 
 In this project we create new partners and attach messages sent to telegram bot.
-Odoo Messages prefixed with ``/telegram`` are sent back to telegram.
+Flectra Messages prefixed with ``/telegram`` are sent back to telegram.
 
-To try it, you need to install this module in demo mode. Also, your odoo
+To try it, you need to install this module in demo mode. Also, your flectra
 instance must be accessible over internet to receive telegram webhooks. Due to
 telegram requirements, your web server must use http**s** connection.
 
@@ -476,9 +476,9 @@ In Telegram:
 
 * send message ``/new`` to @BotFather and follow further instructions to create bot and get the bot token
 
-In Odoo:
+In Flectra:
 
-* `Activate Developer Mode <https://odoo-development.readthedocs.io/en/latest/odoo/usage/debug-mode.html>`__
+* `Activate Developer Mode <https://flectra-development.readthedocs.io/en/latest/flectra/usage/debug-mode.html>`__
 * Open menu ``[[ Settings ]] >> Technical >> Parameters >> System Parameters``
 * Check that parameter ``web.base.url`` is properly set and it's accessible over
   internet (it should not localhost). Also, telegram accepts https addresses only (i.e. not http)
@@ -500,13 +500,13 @@ In Telegram:
 
 * send some message to the created bot
 
-In Odoo:
+In Flectra:
 
 * Open Contacts/Customers menu
 * RESULT: there is new partner with name *Telegram:<YOUR TELEGRAM NAME>* (the prefix can be configured in project parameter PARTNER_NAME_PREFIX)
 * Open the partner and attach a log/message with prefix ``/telegram``, e.g. ``/telegram Hello! How can I help you?``
 * Wait few seconds to get confirmation
-* RESULT: you will see new attached message from Odoo Bot with confirmation that message is sent to telegram
+* RESULT: you will see new attached message from Flectra Bot with confirmation that message is sent to telegram
 
 In telegram:
 
@@ -517,7 +517,7 @@ You can continue chatting in this way
 Demo Project: Odoo2odoo
 =======================
 
-In this project we push partners to external Odoo 13.0 and sync back avatar changes.
+In this project we push partners to external Flectra 13.0 and sync back avatar changes.
 
 To try it, you need to install this module in demo mode.
 
@@ -526,17 +526,17 @@ How it works
 
 *DB trigger* waits for partner creation. When it happens, task's code is run:
 
-* creates a copy of partner on external Odoo
+* creates a copy of partner on external Flectra
 
   * XMLRPC is used as API
 
-* gets back id of the partner copy on external Odoo
-* attaches the id to the partner of our Odoo via ``set_link`` method
+* gets back id of the partner copy on external Flectra
+* attaches the id to the partner of our Flectra via ``set_link`` method
 
-To sync changes on external Odoo we use *Cron trigger*. It runs every 15 minutes. You can also run it manually. The code works as following:
+To sync changes on external Flectra we use *Cron trigger*. It runs every 15 minutes. You can also run it manually. The code works as following:
 
 * call ``search_links`` function to get ids to sync and the oldest sync date
-* request to the external Odoo for the partners, but filtered by sync time to don't load partner without new updates
+* request to the external Flectra for the partners, but filtered by sync time to don't load partner without new updates
 * for each of the fetched partner compare its update time with sync date saved in the link
 
   * if a partner is updated since last sync, then update partner and sync date
@@ -548,8 +548,8 @@ Configuration
 * Select *Demo Odoo2odoo integration* project
 * Go to ``Parameters`` tab
 * Set **Params**:
-  * URL, e.g. ``https://3674665-12-0.runbot41.odoo.com``
-  * DB, e.g. ``odoo``
+  * URL, e.g. ``https://3674665-12-0.runbot41.flectra.com``
+  * DB, e.g. ``flectra``
 * Set **Secrets**:
 
   * USERNAME, e.g. ``admin``
@@ -566,12 +566,12 @@ Usage
 * Go back to the project
 * Click ``Logs`` button and check that there are no errors
 
-* Open the external Odoo
+* Open the external Flectra
 
-  * RESULT: the partner copy is on the external Odoo
+  * RESULT: the partner copy is on the external Flectra
   * Update avatar image on it
 
-* Go back to the *Demo Odoo2odoo Integration* project in our Odoo
+* Go back to the *Demo Odoo2odoo Integration* project in our Flectra
 * Click ``Available Tasks`` tab
 * Click ``[Edit]``
 * Go to ``Sync Remote Partners Updates`` task
@@ -586,19 +586,19 @@ Usage
 
   2. Simply wait up to cron job will start on a schedule :)
 
-* Now open the partner in our Odoo
-* RESULT: avatar is synced from external Odoo
-* You can try to change avatar on external Odoo again and should get the same results
+* Now open the partner in our Flectra
+* RESULT: avatar is synced from external Flectra
+* You can try to change avatar on external Flectra again and should get the same results
 
 **Uploading all existing partners.**
 
 * Open menu ``[[ Sync Studio ]] >> Sync Projects``
 * Select *Demo Odoo2odoo Integration* project
-* Choose Sync Task *Sync Local Partners To Remote Odoo*
+* Choose Sync Task *Sync Local Partners To Remote Flectra*
 * Click button ``[Run Now]``
-* Open the external Odoo
+* Open the external Flectra
 
-  * RESULT: copies of all our partners are in the external Odoo; they have *Sync Studio:* prefix (can be configured in project parameter UPLOAD_ALL_PARTNER_PREFIX)
+  * RESULT: copies of all our partners are in the external Flectra; they have *Sync Studio:* prefix (can be configured in project parameter UPLOAD_ALL_PARTNER_PREFIX)
 
 Demo project: GitHub <-> Trello
 ===============================
@@ -608,7 +608,7 @@ messages in trello cards. It's one side synchronization: new cards and message i
 trello are not published in github. Trello and Github labels are
 synchronized in both directions.
 
-To try it, you need to install this module in demo mode. Also, your odoo
+To try it, you need to install this module in demo mode. Also, your flectra
 instance must be accessible over internet to receive github and trello webhooks.
 
 How it works
@@ -634,11 +634,11 @@ How it works
 
 There is still possibility that labels are mismatch, e.g. due to github api
 temporary unavailability or misfunction (e.g. api request to add label responded
-with success, but label was not attached) or if odoo was stopped when github
+with success, but label was not attached) or if flectra was stopped when github
 tried to notify about updates. In some cases, we can just retry the handler
 (e.g. there was an error on api request to github/trello, then the system tries
 few times to repeat label attaching/detaching). As a solution for cases when
-retrying didn't help (e.g. api is still not working) or cannot help (e.g. odoo
+retrying didn't help (e.g. api is still not working) or cannot help (e.g. flectra
 didn't get webhook notification), we run a *Cron Trigger* at night to check for
 labels mismatch and synchronize them. In ``LABELS_MERGE_STRATEGY`` you can
 choose which strategy to use:
@@ -676,7 +676,7 @@ Configuration
 * In project's *Manual Triggers* tab:
 
   * Click ``[Run Now]`` buttons in trigger *SETUP_GITHUB*
-  * Click ``[Run Now]`` buttons in triggers *SETUP_TRELLO*. Note, that `it doesn't work <https://github.com/odoo/odoo/issues/57133>`_ without one of the following workarounds:
+  * Click ``[Run Now]`` buttons in triggers *SETUP_TRELLO*. Note, that `it doesn't work <https://github.com/flectra/flectra/issues/57133>`_ without one of the following workarounds:
 
     * open file ``sync/controllers/webhook.py`` and temporarily change ``type="json"`` to ``type="http"``. Revert the changes after successfully setting up trello
     * add header "Content-Type: application/json" via your web server. Example for nginx:
@@ -719,9 +719,9 @@ Usage
 **Conflict resolving**
 
 * Create a github issue and check that it's syncing to trello
-* Stop Odoo
+* Stop Flectra
 * Make *different* changes of labels both in github issue and trello card
-* Start Odoo
+* Start Flectra
 * Open menu ``[[ Sync Studio ]] >> Projects``
 * Select *Demo Trello-Github integration* project
 * Click ``[Edit]`` and open *Labels Conflict Resolving* task in *Available Tasks* tab

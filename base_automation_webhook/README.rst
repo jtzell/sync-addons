@@ -10,7 +10,7 @@
  Outgoing Webhooks
 ===================
 
-The modules extends ``base.action.rule`` model to allow sending webhook on Odoo events. Technically, it adds ``make_request(...)`` which is equal to ``requests.request(...)``
+The modules extends ``base.action.rule`` model to allow sending webhook on Flectra events. Technically, it adds ``make_request(...)`` which is equal to ``requests.request(...)``
 
 Questions?
 ==========
@@ -25,9 +25,9 @@ Contributors
 Further information
 ===================
 
-Odoo Apps Store: https://apps.odoo.com/apps/modules/13.0/base_automation_webhook/
+Flectra Apps Store: https://apps.flectra.com/apps/modules/13.0/base_automation_webhook/
 
 
 Notifications on updates: `via Atom <https://github.com/it-projects-llc/misc-addons/commits/13.0/base_automation_webhook.atom>`_, `by Email <https://blogtrottr.com/?subscribe=https://github.com/it-projects-llc/misc-addons/commits/13.0/base_automation_webhook.atom>`_
 
-Tested on `Odoo 13.0 <https://github.com/odoo/odoo/commit/d3f043345c04674bba81762d0afd88dab52aab36>`_
+Tested on `Flectra 13.0 <https://github.com/flectra/flectra/commit/d3f043345c04674bba81762d0afd88dab52aab36>`_

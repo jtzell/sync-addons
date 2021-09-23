@@ -6,7 +6,7 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 # pylint: disable=redefined-builtin
 
-"""Pinguin module for Odoo REST Api.
+"""Pinguin module for Flectra REST Api.
 
 This module implements plumbing code to the REST interface interface concerning
 authentication, validation, ORM access and error codes.
@@ -26,18 +26,18 @@ import traceback
 
 import werkzeug.wrappers
 
-import odoo
-from odoo.http import request
-from odoo.service import security
-from odoo.tools import date_utils
+import flectra
+from flectra.http import request
+from flectra.service import security
+from flectra.tools import date_utils
 
-from odoo.addons.base_api.lib.pinguin import (
+from flectra.addons.base_api.lib.pinguin import (
     error_response,
     get_dict_from_record,
     get_dictlist_from_model,
     get_model_for_read,
 )
-from odoo.addons.web.controllers.main import ReportController
+from flectra.addons.web.controllers.main import ReportController
 
 from .apijsonrequest import api_route
 
@@ -58,7 +58,8 @@ CODE__accepted = 202
 CODE__ok_no_content = 204
 # 4xx Client Errors
 CODE__server_rejects = (400, "Server rejected", "Welcome to macondo!")
-CODE__no_user_auth = (401, "Authentication", "Your token could not be authenticated.")
+CODE__no_user_auth = (401, "Authentication",
+                      "Your token could not be authenticated.")
 CODE__user_no_perm = (403, "Permissions", "%s")
 CODE__method_blocked = (
     403,
@@ -76,14 +77,16 @@ CODE__obj_not_found = (
     "Object not found",
     "This object is not available on this instance.",
 )
-CODE__res_not_found = (404, "Resource not found", "There is no resource with this id.")
+CODE__res_not_found = (404, "Resource not found",
+                       "There is no resource with this id.")
 CODE__act_not_executed = (
     409,
     "Action not executed",
     "The requested action was not executed.",
 )
 # 5xx Server errors
-CODE__invalid_method = (501, "Invalid Method", "This method is not implemented.")
+CODE__invalid_method = (501, "Invalid Method",
+                        "This method is not implemented.")
 CODE__invalid_spec = (
     501,
     "Invalid Field Spec",
@@ -113,7 +116,8 @@ def successful_response(status, data=None):
     try:
         response = json.dumps(data.ids)
     except AttributeError:
-        response = json.dumps(data, default=date_utils.json_default) if data else None
+        response = json.dumps(
+            data, default=date_utils.json_default) if data else None
 
     return werkzeug.wrappers.Response(
         status=status,
@@ -134,13 +138,14 @@ def authenticate_token_for_user(token):
     :param str token: The raw access token.
 
     :returns: User if token is authorized for the requested user.
-    :rtype odoo.models.Model
+    :rtype flectra.models.Model
 
     :raise: werkzeug.exceptions.HTTPException if user not found.
     """
-    user = request.env["res.users"].sudo().search([("openapi_token", "=", token)])
+    user = request.env["res.users"].sudo().search(
+        [("openapi_token", "=", token)])
     if user.exists():
-        # copy-pasted from odoo.http.py:OpenERPSession.authenticate()
+        # copy-pasted from flectra.http.py:OpenERPSession.authenticate()
         request.session.uid = user.id
         request.session.login = user.login
         request.session.session_token = user.id and security.compute_session_token(
@@ -189,7 +194,8 @@ def get_data_from_auth_header(header):
                                               string or if the basic header is
                                               in the wrong format
     """
-    normalized_token = header.replace("Basic ", "").replace("\\n", "").encode("utf-8")
+    normalized_token = header.replace(
+        "Basic ", "").replace("\\n", "").encode("utf-8")
     try:
         decoded_token_parts = (
             base64.b64decode(normalized_token).decode("utf-8").split(":")
@@ -209,7 +215,7 @@ def get_data_from_auth_header(header):
         err_descrip = (
             'Basic auth header payload must be of the form "<%s>" (encoded to base64)'
             % "user_token"
-            if odoo.tools.config["dbfilter"]
+            if flectra.tools.config["dbfilter"]
             else "db_name:user_token"
         )
         raise werkzeug.exceptions.HTTPException(
@@ -230,7 +236,7 @@ def setup_db(httprequest, db_name):
     """
     if httprequest.session.db:
         return
-    if db_name not in odoo.service.db.list_dbs(force=True):
+    if db_name not in flectra.service.db.list_dbs(force=True):
         raise werkzeug.exceptions.HTTPException(
             response=error_response(*CODE__db_not_found)
         )
@@ -259,7 +265,8 @@ def get_namespace_by_name_from_users_namespaces(
     :raise: werkzeug.exceptions.HTTPException if the namespace is not contained
                                               in allowed user namespaces.
     """
-    namespace = request.env["openapi.namespace"].search([("name", "=", namespace_name)])
+    namespace = request.env["openapi.namespace"].search(
+        [("name", "=", namespace_name)])
 
     if not namespace.exists() and raise_exception:
         raise werkzeug.exceptions.HTTPException(
@@ -281,9 +288,9 @@ def create_log_record(**kwargs):
     # request (we cannot use second cursor and we cannot use aborted
     # transaction)
     if not test_mode:
-        with odoo.registry(request.session.db).cursor() as cr:
+        with flectra.registry(request.session.db).cursor() as cr:
             # use new to save data even in case of an error in the old cursor
-            env = odoo.api.Environment(cr, request.session.uid, {})
+            env = flectra.api.Environment(cr, request.session.uid, {})
             _create_log_record(env, **kwargs)
 
 
@@ -469,7 +476,7 @@ def get_model_openapi_access(namespace, model):
         A dictionary containing the model API configuration for this namespace.
             The layout of the dict is as follows:
             ```python
-            {'context':                 (Dict)      odoo context (default values through context),
+            {'context':                 (Dict)      flectra context (default values through context),
             'out_fields_read_multi':    (Tuple)     field spec,
             'out_fields_read_one':      (Tuple)     field spec,
             'out_fields_create_one':    (Tuple)     field spec,
@@ -586,7 +593,7 @@ def wrap__resource__create_one(modelname, context, data, success_code, out_field
         if not test_mode:
             # Somehow don't making a commit here may lead to error
             # "Record does not exist or has been deleted"
-            # Probably, Odoo (10.0 at least) uses different cursors
+            # Probably, Flectra (10.0 at least) uses different cursors
             # to create and to read fields from database
             request.env.cr.commit()
     except Exception as e:
@@ -711,7 +718,8 @@ def wrap__resource__get_report(
     report = request.env.ref(report_external_id)
 
     if isinstance(report, type(request.env["ir.ui.view"])):
-        report = request.env["report"]._get_report_from_name(report_external_id)
+        report = request.env["report"]._get_report_from_name(
+            report_external_id)
 
     model = report.model
     report_name = report.report_name
@@ -837,7 +845,7 @@ def get_OAS_definitions_part(
 ):
     """Recursively gets definition parts of the OAS for model by export fields.
 
-    :param odoo.models.Model model_obj: The model object.
+    :param flectra.models.Model model_obj: The model object.
     :param dict export_fields_dict: The dictionary with export fields.
             Example of the dict is as follows:
             ```python
@@ -881,13 +889,15 @@ def get_OAS_definitions_part(
 
             if meta["type"].endswith("2one"):
                 field_property = child_definition[
-                    get_definition_name(child_model._name, prefix=definition_name)
+                    get_definition_name(child_model._name,
+                                        prefix=definition_name)
                 ]
             else:
                 field_property = {
                     "type": "array",
                     "items": child_definition[
-                        get_definition_name(child_model._name, prefix=definition_name)
+                        get_definition_name(
+                            child_model._name, prefix=definition_name)
                     ],
                 }
         else:
@@ -923,13 +933,14 @@ def get_OAS_definitions_part(
                     }
                 )
             elif meta["type"] in ["one2many", "many2many"]:
-                field_property.update({"type": "array", "items": {"type": "integer"}})
+                field_property.update(
+                    {"type": "array", "items": {"type": "integer"}})
 
             # We cannot have both required and readOnly flags in field openapi
-            # definition, for that reason we cannot blindly use odoo's
+            # definition, for that reason we cannot blindly use flectra's
             # attributed readonly and required.
             #
-            # 1) For odoo-required, but NOT odoo-related field, we do NOT use
+            # 1) For flectra-required, but NOT flectra-related field, we do NOT use
             # openapi-readonly
             #
             # Example of such field can be found in sale module:
@@ -937,7 +948,7 @@ def get_OAS_definitions_part(
             #     states={'draft': [('readonly', False)], 'sent': [('readonly',
             #     False)]}, required=True, ...)
             #
-            # 2) For odoo-required and odoo-related field, we DO use
+            # 2) For flectra-required and flectra-related field, we DO use
             # openapi-readonly, but we don't use openapi-required
             if meta["readonly"] and (not meta["required"] or meta.get("related")):
                 field_property.update(readOnly=True)

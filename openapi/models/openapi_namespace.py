@@ -7,9 +7,9 @@ import collections
 import urllib.parse as urlparse
 import uuid
 
-from odoo import api, fields, models
+from flectra import api, fields, models
 
-from odoo.addons.base_api.lib import pinguin
+from flectra.addons.base_api.lib import pinguin
 
 
 class Namespace(models.Model):
@@ -39,7 +39,8 @@ class Namespace(models.Model):
         default="error",
     )
 
-    last_log_date = fields.Datetime(compute="_compute_last_used", string="Latest usage")
+    last_log_date = fields.Datetime(
+        compute="_compute_last_used", string="Latest usage")
 
     access_ids = fields.One2many(
         "openapi.access",
@@ -98,7 +99,8 @@ class Namespace(models.Model):
         return super(Namespace, self).write(vals)
 
     def get_OAS(self):
-        current_host = self.env["ir.config_parameter"].sudo().get_param("web.base.url")
+        current_host = self.env["ir.config_parameter"].sudo(
+        ).get_param("web.base.url")
         parsed_current_host = urlparse.urlparse(current_host)
 
         report_parameters = [
@@ -257,6 +259,7 @@ class Namespace(models.Model):
 
     def _compute_log_count(self):
         self._cr.execute(
-            "SELECT COUNT(*) FROM openapi_log WHERE namespace_id=(%s);", [str(self.id)]
+            "SELECT COUNT(*) FROM openapi_log WHERE namespace_id=(%s);", [
+                str(self.id)]
         )
         self.log_count = self._cr.dictfetchone()["count"]

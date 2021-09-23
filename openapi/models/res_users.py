@@ -3,13 +3,14 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 import uuid
 
-from odoo import api, fields, models
+from flectra import api, fields, models
 
 
 class ResUsers(models.Model):
     _inherit = "res.users"
 
-    namespace_ids = fields.Many2many("openapi.namespace", string="Allowed Integrations")
+    namespace_ids = fields.Many2many(
+        "openapi.namespace", string="Allowed Integrations")
     openapi_token = fields.Char(
         "OpenAPI Token",
         default=lambda self: self._get_unique_openapi_token(),
